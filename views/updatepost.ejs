@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>New Post</title>
+  </head>
+  <body>
+    <h1>글 수정하기</h1>
+
+    <form action="/updatepost/<%=data.id%>" method="post">
+      <label for="title">제목:</label>
+      <input
+        type="text"
+        id="title"
+        name="title"
+        value="<%= data.title %>"
+        required
+      />
+      <br />
+      <label for="content">내용:</label>
+      <textarea
+        type="text"
+        id="content"
+        name="content"
+        rows="10"
+        cols="100"
+        required
+      >
+<%= data.content %></textarea
+      >
+      <br />
+      <label for="author">저자:</label>
+      <input
+        type="text"
+        id="author"
+        name="author"
+        value="<%= data.author %>"
+        required
+      />
+      <br />
+      <button type="submit">수정!</button>
+    </form>
+  </body>
+</html>

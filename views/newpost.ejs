@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>New Post</title>
+  </head>
+  <body>
+    <h1>새 글 작성하기</h1>
+
+    <form action="/newpost" method="POST">
+      <label for="title">제목:</label>
+      <input type="text" id="title" name="title" required />
+      <br />
+      <label for="content">내용:</label>
+      <textarea
+        type="text"
+        id="content"
+        name="content"
+        rows="10"
+        cols="100"
+        required
+      ></textarea>
+      <br />
+      <label for="author">저자:</label>
+      <input type="text" id="author" name="author" required />
+      <br />
+      <button type="submit">작성!</button>
+    </form>
+  </body>
+</html>

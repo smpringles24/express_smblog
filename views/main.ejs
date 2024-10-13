@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>게시글 목록</h1>
+    <% data.forEach(row => { %>
+    <a href="/post/<%=row.id%>"><%= row.id %>번 <%= row.title %></a>
+    <br />
+    <% }) %>
+
+    <form action="/newpost" method="get"><button>new post</button></form>
+  </body>
+</html>
