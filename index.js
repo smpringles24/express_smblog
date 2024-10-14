@@ -3,13 +3,28 @@ const app = express();
 const mysql = require('mysql2');
 const mysql_info = require('./ignore_config/mysql_config');
 const bodyParser = require('body-parser');
-
+const fse = require('fs-extra');
 const connection = mysql.createConnection(mysql_info);
+const path = require('path');
 
 app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.static('public'));
+
+// 로깅 미들웨어
+const logFilePath = path.join(__dirname, 'server.log');
+const logger = (req, res, next) => {
+  const log = `${Date()}: ${req.method} | ${req.url} \n`;
+  fse.appendFile(logFilePath, log, (err) => {
+    if (err) {
+      console.error('log error', err);
+    }
+  });
+  next();
+};
+
+app.use(logger);
 
 // 메인 페이지
 app.get('/main', (_, res) => {
