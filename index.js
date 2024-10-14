@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const fse = require('fs-extra');
 const connection = mysql.createConnection(mysql_info);
 const path = require('path');
+const bcrypt = require('bcrypt');
 
 app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
@@ -26,10 +27,12 @@ const logger = (req, res, next) => {
 
 app.use(logger);
 
+let isLoggin = false;
+
 // 메인 페이지
 app.get('/main', (_, res) => {
   connection.query('SELECT * FROM sm_sample01', (err, rows, _) => {
-    res.render('main', { data: rows });
+    res.render('main', { data: rows, isLoggin: isLoggin });
   });
 });
 
@@ -98,10 +101,64 @@ app.post('/updatepost/:id', (req, res) => {
   );
 });
 
+// 로그인
+app.get('/login/signup', (req, res) => {
+  res.render('signup');
+});
+
+app.post('/login/signup', (req, res) => {
+  const { id, password, name } = req.body;
+  const encryptedPassword = bcrypt.hashSync(password, 10);
+  connection.query(
+    'INSERT INTO user_info (user_id, user_password, user_name) VALUES (?, ?, ?)',
+    [id, encryptedPassword, name],
+    (err) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).send('database insertion err');
+      }
+      res.redirect('/main');
+    }
+  );
+});
+
+app.post('/login', (req, res) => {
+  const { id, password } = req.body;
+  // login테이블 쿼리(where id = id) 돌려서 해싱해서 저장해둔 값 가져오기
+  connection.query(
+    'SELECT user_password FROM user_info WHERE user_id = ?',
+    [id],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        if (result.length === 0) {
+          res.send('no id data');
+        } else {
+          const isPasswordVaild = bcrypt.compareSync(
+            password,
+            result[0].user_password
+          );
+          if (isPasswordVaild) {
+            console.log('로그인 성공');
+            isLoggin = true;
+            res.redirect('/main');
+          } else {
+            console.log('로그인 실패');
+            res.redirect('/main');
+          }
+        }
+      }
+    }
+  );
+});
+
+// 로그아웃
+app.post('/logout', (req, res) => {
+  isLoggin = false;
+  res.redirect('/main');
+});
+
 app.listen(3000, () => {
   console.log('Someone visit my backend!');
 });
-
-// CRUD 구현 완료.
-// 이번엔 CRLF LF 문제 해결해서 GIT에 업로드
-// 그후 약간의 프로젝트 업그레이드. EX) MD형식으로 글 작성가능/이미지 저장/로그인/인증 ...
